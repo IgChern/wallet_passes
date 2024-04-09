@@ -187,6 +187,8 @@ class Pass(models.Model):
         _('Background Color'), max_length=255, blank=True, null=True)
     labelColor = models.CharField(
         _('Label Color'), max_length=255, blank=True, null=True)
+    expirationDate = models.DateTimeField(
+        _('Expire Date'), blank=True, null=True)
 
     pass_information = models.ManyToManyField(
         PassInformation, related_name="passes")
@@ -205,7 +207,7 @@ class Pass(models.Model):
             'teamIdentifier': self.teamIdentifier,
             'organizationName': self.organizationName,
             'suppressStripShine': self.suppressStripShine,
-            self.passInformation.json_name: self.passInformation.get_dict(),
+            self.pass_information.json_name: self.pass_information.get_dict(),
             'barcode': self.barcode.get_dict_barcode()
         }
 
@@ -223,6 +225,8 @@ class Pass(models.Model):
             d['backgroundColor'] = self.backgroundColor
         if self.labelColor:
             d['labelColor'] = self.labelColor
+        if self.expirationDate:
+            d['expirationDate'] = self.expirationDate
 
         return d
 

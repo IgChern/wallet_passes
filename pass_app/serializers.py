@@ -49,13 +49,13 @@ class PassSerializer(serializers.ModelSerializer):
         fields = ['formatVersion', 'description', 'passTypeIdentifier', 'serialNumber',
                   'teamIdentifier', 'organizationName', 'webServiceURL', 'authenticationToken',
                   'suppressStripShine', 'relevantDate', 'logoText', 'foregroundColor',
-                  'backgroundColor', 'labelColor', 'pass_information', 'barcode', 'location']
+                  'backgroundColor', 'labelColor', 'expirationDate', 'pass_information', 'barcode', 'location']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
         optional_fields = ['webServiceURL', 'authenticationToken', 'suppressStripShine',
-                           'relevantDate', 'logoText', 'foregroundColor', 'backgroundColor', 'labelColor']
+                           'relevantDate', 'logoText', 'foregroundColor', 'backgroundColor', 'labelColor', 'expirationDate']
         for field in optional_fields:
             if getattr(instance, field, None) is not None:
                 data[field] = getattr(instance, field)
