@@ -103,55 +103,55 @@ class Location(models.Model):
 
 
 class PassInformation(models.Model):
-    header_fields = models.ManyToManyField(
+    headerFields = models.ManyToManyField(
         Field, related_name='header_fields', blank=True)
-    primary_fields = models.ManyToManyField(
+    primaryFields = models.ManyToManyField(
         Field, related_name='primary_fields', blank=True)
-    secondary_fields = models.ManyToManyField(
+    secondaryFields = models.ManyToManyField(
         Field, related_name='secondary_fields', blank=True)
-    back_fields = models.ManyToManyField(
+    backFields = models.ManyToManyField(
         Field, related_name='back_fields', blank=True)
-    auxiliary_fields = models.ManyToManyField(
+    auxiliaryFields = models.ManyToManyField(
         Field, related_name='auxiliary_fields', blank=True)
     json_name = models.CharField(_('Name pass'), choices=PassChoice.choices)
 
     def add_header(self, key, value, label):
         field = Field.objects.create(key=key, value=value, label=label)
-        self.header_fields.add(field)
+        self.headerFields.add(field)
 
     def add_primary_field(self, key, value, label):
         field = Field.objects.create(key=key, value=value, label=label)
-        self.primary_fields.add(field)
+        self.primaryFields.add(field)
 
     def add_secondary_field(self, key, value, label):
         field = Field.objects.create(key=key, value=value, label=label)
-        self.secondary_fields.add(field)
+        self.secondaryFields.add(field)
 
     def add_back_field(self, key, value, label):
         field = Field.objects.create(key=key, value=value, label=label)
-        self.back_fields.add(field)
+        self.backFields.add(field)
 
     def add_auxiliary_field(self, key, value, label):
         field = Field.objects.create(key=key, value=value, label=label)
-        self.auxiliary_fields.add(field)
+        self.auxiliaryFields.add(field)
 
     def get_dict(self) -> dict:
         d = {}
-        if self.header_fields.exists():
+        if self.headerFields.exists():
             d['headerFields'] = [field.get_dict_field()
-                                 for field in self.header_fields.all()]
-        if self.primary_fields.exists():
+                                 for field in self.headerFields.all()]
+        if self.primaryFields.exists():
             d['primaryFields'] = [field.get_dict_field()
-                                  for field in self.primary_fields.all()]
-        if self.secondary_fields.exists():
+                                  for field in self.primaryFields.all()]
+        if self.secondaryFields.exists():
             d['secondaryFields'] = [field.get_dict_field()
-                                    for field in self.secondary_fields.all()]
-        if self.back_fields.exists():
+                                    for field in self.secondaryFields.all()]
+        if self.backFields.exists():
             d['backFields'] = [field.get_dict_field()
-                               for field in self.back_fields.all()]
-        if self.auxiliary_fields.exists():
+                               for field in self.backFields.all()]
+        if self.auxiliaryFields.exists():
             d['auxiliaryFields'] = [field.get_dict_field()
-                                    for field in self.auxiliary_fields.all()]
+                                    for field in self.auxiliaryFields.all()]
         return d
 
     def __str__(self):
@@ -176,7 +176,7 @@ class Pass(models.Model):
     authenticationToken = models.CharField(
         _('Authentication Token'), max_length=255, blank=True, null=True)
     suppressStripShine = models.BooleanField(
-        _('Suppress Strip Shine'), default=False)
+        _('Suppress Strip Shine'), null=True, blank=True)
     relevantDate = models.DateTimeField(
         _('Relevant Date'), blank=True, null=True)
     logoText = models.CharField(
@@ -188,8 +188,8 @@ class Pass(models.Model):
     labelColor = models.CharField(
         _('Label Color'), max_length=255, blank=True, null=True)
 
-    passInformation = models.ForeignKey(
-        PassInformation, related_name="passes", on_delete=models.CASCADE)
+    pass_information = models.ManyToManyField(
+        PassInformation, related_name="passes")
     barcode = models.OneToOneField(
         Barcode, related_name="barcodes", on_delete=models.CASCADE)
     location = models.ForeignKey(

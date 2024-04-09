@@ -22,24 +22,25 @@ class LocationSerializer(serializers.ModelSerializer):
 
 
 class PassInformationSerializer(serializers.ModelSerializer):
-    header_fields = FieldSerializer(many=True, required=False)
-    primary_fields = FieldSerializer(many=True, required=False)
-    secondary_fields = FieldSerializer(many=True, required=False)
-    back_fields = FieldSerializer(many=True, required=False)
-    auxiliary_fields = FieldSerializer(many=True, required=False)
+    headerFields = FieldSerializer(many=True, required=False)
+    primaryFields = FieldSerializer(many=True, required=False)
+    secondaryFields = FieldSerializer(many=True, required=False)
+    backFields = FieldSerializer(many=True, required=False)
+    auxiliaryFields = FieldSerializer(many=True, required=False)
 
     class Meta:
         model = PassInformation
-        fields = ['header_fields', 'primary_fields',
-                  'secondary_fields', 'back_fields', 'auxiliary_fields']
+        fields = ['headerFields', 'primaryFields',
+                  'secondaryFields', 'backFields', 'auxiliaryFields', 'json_name']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        return {key: value for key, value in data.items() if value}
+        data = {key: value for key, value in data.items() if value}
+        return data
 
 
 class PassSerializer(serializers.ModelSerializer):
-    passInformation = PassInformationSerializer()
+    pass_information = PassInformationSerializer(many=True)
     barcode = BarcodeSerializer()
     location = LocationSerializer()
 
@@ -48,10 +49,11 @@ class PassSerializer(serializers.ModelSerializer):
         fields = ['formatVersion', 'description', 'passTypeIdentifier', 'serialNumber',
                   'teamIdentifier', 'organizationName', 'webServiceURL', 'authenticationToken',
                   'suppressStripShine', 'relevantDate', 'logoText', 'foregroundColor',
-                  'backgroundColor', 'labelColor', 'passInformation', 'barcode', 'location']
+                  'backgroundColor', 'labelColor', 'pass_information', 'barcode', 'location']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
+
         optional_fields = ['webServiceURL', 'authenticationToken', 'suppressStripShine',
                            'relevantDate', 'logoText', 'foregroundColor', 'backgroundColor', 'labelColor']
         for field in optional_fields:
