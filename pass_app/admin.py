@@ -29,5 +29,4 @@ class PassAdmin(admin.ModelAdmin):
 
 @admin.register(PassInformation)
 class PassInfoAdmin(admin.ModelAdmin):
-    search_fields = ('json_name', )
-    list_display = ('json_name', )
+    pass

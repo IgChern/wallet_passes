@@ -31,34 +31,29 @@ class PassInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = PassInformation
         fields = ['headerFields', 'primaryFields',
-                  'secondaryFields', 'backFields', 'auxiliaryFields', 'json_name']
+                  'secondaryFields', 'backFields', 'auxiliaryFields']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data = {key: value for key, value in data.items() if value}
+        data = instance.get_dict()
         return data
 
 
 class PassSerializer(serializers.ModelSerializer):
     pass_information = PassInformationSerializer(many=True)
     barcode = BarcodeSerializer()
-    location = LocationSerializer()
+    locations = LocationSerializer()
 
     class Meta:
         model = Pass
         fields = ['formatVersion', 'description', 'passTypeIdentifier', 'serialNumber',
                   'teamIdentifier', 'organizationName', 'webServiceURL', 'authenticationToken',
                   'suppressStripShine', 'relevantDate', 'logoText', 'foregroundColor',
-                  'backgroundColor', 'labelColor', 'expirationDate', 'pass_information', 'barcode', 'location']
+                  'backgroundColor', 'labelColor', 'expirationDate', 'pass_information', 'barcode', 'locations']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
 
-        optional_fields = ['webServiceURL', 'authenticationToken', 'suppressStripShine',
-                           'relevantDate', 'logoText', 'foregroundColor', 'backgroundColor', 'labelColor', 'expirationDate']
-        for field in optional_fields:
-            if getattr(instance, field, None) is not None:
-                data[field] = getattr(instance, field)
-            else:
-                data.pop(field, None)
+        data = instance.get_full_dict()
+
         return data

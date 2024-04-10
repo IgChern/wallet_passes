@@ -53,7 +53,7 @@ class Field(models.Model):
         return {
             'key': self.key,
             'value': self.value,
-            'label': self.label,
+            'label': self.label if self.label else None,
             'change_message': self.change_message if self.change_message else None
         }
 
@@ -94,6 +94,13 @@ class Location(models.Model):
     longitude = models.FloatField(_('Longtitude'))
     altitude = models.FloatField(_('Altitude'), default=0.0, blank=True)
 
+    def get_dict_location(self):
+        return {
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'altitude': self.altitude
+        }
+
     def __str__(self) -> str:
         return f'{self.latitude}-{self.longitude}'
 
@@ -113,27 +120,6 @@ class PassInformation(models.Model):
         Field, related_name='back_fields', blank=True)
     auxiliaryFields = models.ManyToManyField(
         Field, related_name='auxiliary_fields', blank=True)
-    json_name = models.CharField(_('Name pass'), choices=PassChoice.choices)
-
-    def add_header(self, key, value, label):
-        field = Field.objects.create(key=key, value=value, label=label)
-        self.headerFields.add(field)
-
-    def add_primary_field(self, key, value, label):
-        field = Field.objects.create(key=key, value=value, label=label)
-        self.primaryFields.add(field)
-
-    def add_secondary_field(self, key, value, label):
-        field = Field.objects.create(key=key, value=value, label=label)
-        self.secondaryFields.add(field)
-
-    def add_back_field(self, key, value, label):
-        field = Field.objects.create(key=key, value=value, label=label)
-        self.backFields.add(field)
-
-    def add_auxiliary_field(self, key, value, label):
-        field = Field.objects.create(key=key, value=value, label=label)
-        self.auxiliaryFields.add(field)
 
     def get_dict(self) -> dict:
         d = {}
@@ -155,7 +141,7 @@ class PassInformation(models.Model):
         return d
 
     def __str__(self):
-        return self.json_name
+        return f'{self.pk}'
 
     class Meta:
         verbose_name = _('Pass Info')
@@ -194,8 +180,11 @@ class Pass(models.Model):
         PassInformation, related_name="passes")
     barcode = models.OneToOneField(
         Barcode, related_name="barcodes", on_delete=models.CASCADE)
-    location = models.ForeignKey(
+    locations = models.ForeignKey(
         Location, related_name="locations", on_delete=models.CASCADE)
+
+    json_name = models.CharField(
+        _('Name pass'), choices=PassChoice.choices, default='')
 
     def get_full_dict(self):
 
@@ -206,11 +195,12 @@ class Pass(models.Model):
             'serialNumber': self.serialNumber,
             'teamIdentifier': self.teamIdentifier,
             'organizationName': self.organizationName,
-            'suppressStripShine': self.suppressStripShine,
-            self.pass_information.json_name: self.pass_information.get_dict(),
-            'barcode': self.barcode.get_dict_barcode()
+            'barcode': self.barcode.get_dict_barcode(),
+            'locations': self.locations.get_dict_location()
         }
 
+        if self.suppressStripShine:
+            d['suppressStripShine'] = self.suppressStripShine
         if self.webServiceURL:
             d['webServiceURL'] = self.webServiceURL
         if self.authenticationToken:
@@ -227,6 +217,12 @@ class Pass(models.Model):
             d['labelColor'] = self.labelColor
         if self.expirationDate:
             d['expirationDate'] = self.expirationDate
+
+        pass_information_data = {}
+        for info in self.pass_information.all():
+            pass_information_data.update(info.get_dict())
+
+        d[self.json_name] = pass_information_data
 
         return d
 
