@@ -43,19 +43,31 @@ class NumberStyle(models.TextChoices):
 class Field(models.Model):
     key = models.CharField(_('Key'), max_length=255)
     value = models.CharField(_('Value'), max_length=255)
-    label = models.CharField(_('Label'), max_length=255, blank=True)
+    label = models.CharField(_('Label'), max_length=255, null=True)
     change_message = models.CharField(
-        _('Change Message'), max_length=255, blank=True)
+        _('Change Message'), max_length=255, blank=True, null=True)
     text_alignment = models.CharField(
-        _('Text Alignment'), max_length=50, choices=Alignment.choices, default=Alignment.LEFT)
+        _('Text Alignment'), max_length=50, choices=Alignment.choices, null=True, blank=True)
+    number_style = models.CharField(
+        _('Number Style '), max_length=50, choices=NumberStyle.choices, null=True, blank=True)
+    time_style = models.CharField(
+        _('Time Style '), max_length=50, choices=DateStyle.choices, null=True, blank=True)
+    date_style = models.CharField(
+        _('Date Style '), max_length=50, choices=DateStyle.choices, null=True, blank=True)
 
     def get_dict_field(self) -> dict:
-        return {
+        data = {
             'key': self.key,
             'value': self.value,
-            'label': self.label if self.label else None,
-            'change_message': self.change_message if self.change_message else None
+            'label': self.label,
+            'change_message': self.change_message,
+            'textAlignment': self.text_alignment,
+            'numberStyle': self.number_style,
+            'timeStyle': self.time_style,
+            'dateStyle': self.date_style
         }
+
+        return {key: value for key, value in data.items() if value is not None}
 
     def __str__(self):
         return self.key
@@ -69,17 +81,19 @@ class Barcode(models.Model):
     message = models.CharField(_('Barcode message'), max_length=255)
     format = models.CharField(_('Barcode format'),
                               max_length=50, choices=BarcodeFormat.choices, default=BarcodeFormat.PDF417)
-    alt_text = models.CharField(_('Text'), max_length=255, blank=True)
+    alt_text = models.CharField(
+        _('Text'), max_length=255, blank=True, null=True)
     message_encoding = models.CharField(
         _('Encoding'), max_length=50, default='iso-8859-1')
 
     def get_dict_barcode(self):
-        return {
+        data = {
             'message': self.message,
             'format': self.format,
             'message_encoding': self.message_encoding,
-            'alt_text': self.alt_text if self.alt_text else None
+            'alt_text': self.alt_text
         }
+        return {key: value for key, value in data.items() if value is not None}
 
     def __str__(self):
         return self.message

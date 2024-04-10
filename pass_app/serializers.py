@@ -6,7 +6,8 @@ from .models import Barcode, Field, Location, Pass, PassInformation
 class FieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = Field
-        fields = ['key', 'value', 'label', 'change_message', 'text_alignment']
+        fields = ['key', 'value', 'label', 'change_message',
+                  'text_alignment', 'number_style', 'time_style', 'date_style']
 
 
 class BarcodeSerializer(serializers.ModelSerializer):
@@ -53,7 +54,5 @@ class PassSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-
         data = instance.get_full_dict()
-
         return data
