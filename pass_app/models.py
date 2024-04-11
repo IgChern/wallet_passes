@@ -123,6 +123,19 @@ class Location(models.Model):
         verbose_name_plural = _('Locations')
 
 
+class Images(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    imagefile = models.FileField(upload_to='images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = _('Image')
+        verbose_name_plural = _('Images')
+
+
 class PassInformation(models.Model):
     headerFields = models.ManyToManyField(
         Field, related_name='header_fields', blank=True)
@@ -199,6 +212,8 @@ class Pass(models.Model):
 
     json_name = models.CharField(
         _('Name pass'), choices=PassChoice.choices, default='')
+
+    files = models.ManyToManyField(Images, related_name='images')
 
     def get_full_dict(self):
 

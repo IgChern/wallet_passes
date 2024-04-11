@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Barcode, Field, Location, Pass, PassInformation
+from .models import Barcode, Field, Images, Location, Pass, PassInformation
 
 
 # Register your models here.
@@ -29,4 +29,9 @@ class PassAdmin(admin.ModelAdmin):
 
 @admin.register(PassInformation)
 class PassInfoAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Images)
+class ImageAdmin(admin.ModelAdmin):
     pass

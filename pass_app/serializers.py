@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Barcode, Field, Location, Pass, PassInformation
+from .models import Barcode, Field, Images, Location, Pass, PassInformation
 
 
 class FieldSerializer(serializers.ModelSerializer):
@@ -56,3 +56,9 @@ class PassSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data = instance.get_full_dict()
         return data
+
+
+class ImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Images
+        fields = ['id', 'name', 'imagefile', 'uploaded_at']
