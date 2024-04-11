@@ -23,8 +23,8 @@ class LocationAdmin(admin.ModelAdmin):
 
 @admin.register(Pass)
 class PassAdmin(admin.ModelAdmin):
-    search_fields = ('description', )
-    list_display = ('description', )
+    search_fields = ('description', 'pk')
+    list_display = ('description', 'pk')
 
 
 @admin.register(PassInformation)

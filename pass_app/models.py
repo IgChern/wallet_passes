@@ -220,7 +220,7 @@ class Pass(models.Model):
         if self.authenticationToken:
             d['authenticationToken'] = self.authenticationToken
         if self.relevantDate:
-            d['relevantDate'] = self.relevantDate
+            d['relevantDate'] = self.relevantDate.isoformat()
         if self.logoText:
             d['logoText'] = self.logoText
         if self.foregroundColor:
@@ -230,7 +230,7 @@ class Pass(models.Model):
         if self.labelColor:
             d['labelColor'] = self.labelColor
         if self.expirationDate:
-            d['expirationDate'] = self.expirationDate
+            d['expirationDate'] = self.expirationDate.isoformat()
 
         pass_information_data = {}
         for info in self.pass_information.all():
